@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup as soup
 from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 import datetime as dt
+import numpy as np
 
 # 1. Initialize the browser.
 # 2. Create a data dictionary.
@@ -31,7 +32,8 @@ def scrape_all():
         "news_paragraph": news_paragraph,
         "featured_image": featured_image(browser),
         "facts": mars_facts(),
-        "last_modified": dt.datetime.now()
+        "last_modified": dt.datetime.now(),
+        "hemi_data": hemi_data(browser)
     }
         # This dictionary does two things: It runs all of the functions we've created—featured_image(browser)
         # it also stores all of the results
@@ -116,6 +118,40 @@ def mars_facts():
 
     # Convert dataframe into HTML format, add bootstrap
     return df.to_html(classes="table table-striped")
+
+## Scrape Hemisphere Data
+def hemi_data(browser):
+    url = 'https://marshemispheres.com'
+    browser.visit(url)
+
+    html = browser.html
+    soup = bs(html, 'html.parser')
+
+    items = soup.find_all('div', class_='item')
+
+    hemisphere_image_urls = []
+    for x in range(0, 4):
+        # Browse through each page w/ Enhanced in the partial text
+        browser.links.find_by_partial_text('Enhanced')[x].click()
+    
+        # Parse the HTML
+        html = browser.html
+        imgurl_soup = soup(html,'html.parser')
+    
+        # Scraping
+        title = imgurl_soup.find('h2', class_='title').text
+        img_url = imgurl_soup.find('li').a.get('href')
+    
+        # Store results into the empty hemispheres dictionary
+        hemispheres = {}
+        hemispheres['img_url'] = f'https://marshemispheres.com/{img_url}'
+        hemispheres['title'] = title
+        hemisphere_image_urls.append(hemispheres)
+    
+        # Browse back to repeat for all 4 pages
+        browser.back()
+
+    return hemisphere_image_urls
 
 if __name__ == "__main__":
     # If running as script, print scraped data
