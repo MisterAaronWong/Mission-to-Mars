@@ -1,6 +1,6 @@
 # Import Splinter and BeautifulSoup and Pandas
 from splinter import Browser
-from bs4 import BeautifulSoup as soup
+from bs4 import BeautifulSoup as bs
 from webdriver_manager.chrome import ChromeDriverManager
 import pandas as pd
 import datetime as dt
@@ -33,7 +33,7 @@ def scrape_all():
         "featured_image": featured_image(browser),
         "facts": mars_facts(),
         "last_modified": dt.datetime.now(),
-        "hemi_data": hemi_data(browser)
+        "hemispheres": hemi_data(browser)
     }
         # This dictionary does two things: It runs all of the functions we've created—featured_image(browser)
         # it also stores all of the results
@@ -59,7 +59,7 @@ def mars_news(browser):
     # Convert the browser html to a soup object and then quit the browser
 
     html = browser.html
-    news_soup = soup(html, 'html.parser')
+    news_soup = bs(html, 'html.parser')
 
      # Add try/except for error handling
     try:
@@ -88,7 +88,7 @@ def featured_image(browser):
 
     # Parse the resulting html with soup
     html = browser.html
-    img_soup = soup(html, 'html.parser')
+    img_soup = bs(html, 'html.parser')
 
     try:
         # find the relative image url
@@ -136,7 +136,7 @@ def hemi_data(browser):
     
         # Parse the HTML
         html = browser.html
-        imgurl_soup = soup(html,'html.parser')
+        imgurl_soup = bs(html,'html.parser')
     
         # Scraping
         title = imgurl_soup.find('h2', class_='title').text

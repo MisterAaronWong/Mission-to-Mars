@@ -47,7 +47,7 @@ def scrape(): # First, we define it
    mars = mongo.db.mars # assign a new variable that points to our Mongo database
    mars_data = scraping.scrape_all() # create a new variable to hold the newly scraped data: mars_data = scraping.scrape_all()
     # we're referencing the scrape_all function in the scraping.py file exported from Jupyter Notebook
-   mars.update({}, mars_data, upsert=True) # Now that we've gathered new data, we need to update the database using .update()
+   mars.update_many({}, {"$set": mars_data}, upsert=True) # Now that we've gathered new data, we need to update the database using .update()
     # We're inserting data, so first we'll need to add an empty JSON object with {} in place of the query_parameter
     # Next, we'll use the data we have stored in mars_data
     # Finally, the option we'll include is upsert=True
